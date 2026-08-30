@@ -12,6 +12,7 @@ type ParsedAttachment = {
 };
 
 export type ParsedEmail = {
+  headers?: Record<string, string>;
   fromAddress: string;
   fromName: string | null;
   to: string[];
@@ -38,6 +39,7 @@ export async function parseRawEmail(raw: ArrayBuffer): Promise<ParsedEmail> {
   const from = firstMailbox(email.from);
 
   return {
+    headers: Object.fromEntries(email.headers.map((header) => [header.key, header.value])),
     fromAddress: from.address,
     fromName: normalizeSenderName(from.name),
     to: flattenAddresses(email.to),
