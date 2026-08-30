@@ -9,6 +9,7 @@ import { ignoreMailEventFailure, publishMessageMailEvent } from "./features/even
 import { handleMailApiDiscovery } from "./features/mail-api/discovery";
 import { handleMcpRoute } from "./features/mcp/route";
 import { notifyInboundMessage } from "./features/notifications/delivery";
+import { dispatchOrganizationWebhooks } from "./features/notifications/webhook";
 import { consumeJobs } from "./jobs/consumer";
 import type { WorkerEnv } from "./lib/env";
 import { apiRoutes } from "./routes";
@@ -60,6 +61,18 @@ export default {
           // Push delivery is additive and never changes accepted inbound mail.
         })
       );
+      for (const action of stored.webhookActions ?? []) {
+        ctx.waitUntil(
+          dispatchOrganizationWebhooks(env, {
+            id: `message:${stored.message.id}:${action.ruleId}`,
+            type: "inbound.message.parsing_rule",
+            organizationId: stored.organizationId ?? "org_default",
+            resourceId: stored.message.id,
+            occurredAt: new Date().toISOString(),
+            data: { ruleId: action.ruleId, action: action.spec }
+          }).catch(() => undefined)
+        );
+      }
       ctx.waitUntil(
         ignoreMailEventFailure(
           publishMessageMailEvent(env, [
