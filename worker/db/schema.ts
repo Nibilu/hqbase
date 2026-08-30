@@ -5,4 +5,5 @@ export * from "./schema-core";
 export * from "./schema-mail";
 export * from "./schema-messages";
 export * from "./schema-notifications";
+export * from "./schema-organizations";
 export * from "./schema-signatures";
