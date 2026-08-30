@@ -73,6 +73,9 @@ Please review the project and decide whether it is right for your workspace.
 
 ## Develop locally
 
+See [docs/local-dev.md](docs/local-dev.md) for prerequisites, local D1/R2
+bindings, environment setup, startup, reset, and test commands.
+
 ### Start the application
 
 ```sh
