@@ -95,7 +95,9 @@ export function SettingsPage({
         {activeTab === "notifications" ? (
           <NotificationSettings notifications={notifications} />
         ) : null}
-        {activeTab === "interface" ? <InterfaceSettings /> : null}
+        {activeTab === "interface" ? (
+          <InterfaceSettings organizationId={currentUser.organizationId} />
+        ) : null}
         {activeTab === "labels" ? (
           <LabelSettings canManage={canManage} labels={labels} onChanged={onLabelsChanged} />
         ) : null}
