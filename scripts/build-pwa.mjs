@@ -1,4 +1,4 @@
-import { readdir, readFile, stat, writeFile } from "node:fs/promises";
+import { copyFile, readdir, readFile, stat, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
@@ -188,6 +188,8 @@ export async function buildPwa(root = process.cwd()) {
   }
 
   const cacheName = `hqbase-pwa-${packageJson.name}-${packageJson.version}`;
+  await copyFile(path.join(root, "LICENSE"), path.join(dist, "LICENSE"));
+  await copyFile(path.join(root, "NOTICE"), path.join(dist, "NOTICE"));
   await writeFile(
     path.join(dist, "service-worker.js"),
     renderServiceWorker({ cacheName, precacheUrls })
