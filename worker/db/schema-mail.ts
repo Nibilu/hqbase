@@ -22,6 +22,7 @@ export const mailboxes = sqliteTable(
   "mailboxes",
   {
     id: text("id").primaryKey().notNull(),
+    organizationId: text("organization_id"),
     address: text("address").notNull().unique(),
     mailDomainId: text("mail_domain_id")
       .notNull()
@@ -94,6 +95,7 @@ export const mailDomains = sqliteTable(
   "mail_domains",
   {
     id: text("id").primaryKey().notNull(),
+    organizationId: text("organization_id"),
     name: text("name").notNull().unique(),
     zoneId: text("zone_id"),
     accountId: text("account_id"),
