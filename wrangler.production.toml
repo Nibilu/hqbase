@@ -1,0 +1,36 @@
+name = "hqbase-production"
+main = "worker/index.ts"
+account_id = "__ACCOUNT_ID__"
+compatibility_date = "2026-07-28"
+compatibility_flags = ["nodejs_compat"]
+
+[assets]
+directory = "./dist"
+binding = "ASSETS"
+not_found_handling = "single-page-application"
+run_worker_first = ["/api/*", "/management/*", "/mcp", "/mcp/*", "/.well-known/*"]
+
+[observability]
+enabled = true
+
+[[d1_databases]]
+binding = "DB"
+database_name = "hqbase-production"
+database_id = "00000000-0000-0000-0000-000000000000"
+migrations_dir = "migrations"
+migrations_table = "d1_migrations"
+
+[[r2_buckets]]
+binding = "MAIL_OBJECTS"
+bucket_name = "hqbase-production-r2"
+
+[[durable_objects.bindings]]
+name = "MAIL_EVENTS"
+class_name = "MailEvents"
+
+[[migrations]]
+tag = "mail-events-v1"
+new_sqlite_classes = ["MailEvents"]
+
+[vars]
+HQBASE_ENVIRONMENT = "production"
