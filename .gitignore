@@ -11,3 +11,5 @@ test-results
 .DS_Store
 .hqbase/deployments/*
 !.hqbase/deployments/.gitkeep
+!.hqbase/deployments/*/
+!.hqbase/deployments/*/config.example.json
