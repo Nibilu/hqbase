@@ -1,6 +1,7 @@
 import { newId, nowIso } from "../../db/client";
 
 export type AuditInput = {
+  organizationId?: string | null;
   correlationId: string;
   actorType: "user" | "agent" | "system" | "operator";
   actorId?: string | null;
@@ -43,12 +44,13 @@ export function auditStatement(
   return db
     .prepare(
       `INSERT INTO audit_events
-       (id, occurred_at, correlation_id, actor_type, actor_id, action, resource_type,
+       (id, organization_id, occurred_at, correlation_id, actor_type, actor_id, action, resource_type,
         resource_id, outcome, metadata_json)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
     )
     .bind(
       newId("aud"),
+      input.organizationId ?? null,
       occurredAt,
       input.correlationId,
       input.actorType,
