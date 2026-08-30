@@ -44,7 +44,8 @@ const expectedMigrationNames = [
 ];
 const expectedAfterDeployMigrationNames = [
   "0001_remove_mailbox_alias_storage.sql",
-  "0002_finalize_agent_principals.sql"
+  "0002_finalize_agent_principals.sql",
+  "0003_organizations_and_customization.sql"
 ];
 const oneAddressMigrationSource = readFileSync(
   resolve(migrationsDirectory, "0016_one_address_per_mailbox.sql"),
@@ -419,7 +420,7 @@ describe("SQL migration contract", () => {
     const tables = database
       .prepare("SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%'")
       .all();
-    expect(tables).toHaveLength(47);
+    expect(tables).toHaveLength(56);
     expect(tables.map((table) => table.name)).not.toContain("mailbox_addresses");
 
     const mailboxColumns = database.prepare("PRAGMA table_info(mailboxes)").all();
@@ -789,7 +790,7 @@ describe("SQL migration contract", () => {
     });
     expect(
       database.prepare("SELECT count(*) AS count FROM d1_migrations_after_deploy").get()
-    ).toEqual({ count: 2 });
+    ).toEqual({ count: 3 });
   });
 
   it("closes deleted agent mailboxes before and after principal finalization", async () => {
