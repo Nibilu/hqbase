@@ -14,6 +14,7 @@ type WorkerEnvOverrides = {
   VAPID_PRIVATE_KEY?: string;
   VAPID_PUBLIC_KEY?: string;
   VAPID_SUBJECT?: string;
+  HQBASE_WEBHOOK_SIGNING_KEY?: string;
 };
 
 export type WorkerEnv = Omit<Cloudflare.Env, keyof WorkerEnvOverrides> & WorkerEnvOverrides;
