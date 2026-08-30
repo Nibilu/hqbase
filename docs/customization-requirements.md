@@ -23,6 +23,18 @@ FOU-40..43 cannot drift into each other.
   shippable. Tests, lint, typecheck, and the deployment dry-run must stay
   green; any custom-code gate is additive.
 
+## Worker implementation contract
+
+Inbound parsing loads only enabled rules for the resolved organization and
+orders them by `priority ASC, id ASC`. Header rules use lower-case header names;
+a matching rule with `drop: true` removes the header before storage. Subject
+rules use `pattern` and optional JavaScript-compatible `flags`. Attachment
+rules use an exact, case-insensitive `mime` value. A `reject` action rejects the
+message before persistence. A `webhook` action is dispatched after persistence
+to enabled `audit_subscriptions` over HTTPS, with an HMAC-SHA-256 signature in
+`X-HQBase-Signature`; the signing key stays in the Worker secret
+`HQBASE_WEBHOOK_SIGNING_KEY`.
+
 ## Existing extension points the stories sit on top of
 
 The stories below are not greenfield. They land on top of these upstream
