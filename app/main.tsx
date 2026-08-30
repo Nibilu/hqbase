@@ -2,6 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 
 import { selectEntryRoute } from "./entry-route";
+import { BrandingProvider } from "./features/branding/branding-provider";
 import { PwaLifecycle } from "./features/pwa/pwa-lifecycle";
 import { initializeTheme } from "./features/theme/theme";
 import { ThemeProvider } from "./features/theme/theme-provider";
@@ -29,8 +30,10 @@ async function render() {
   ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
     <React.StrictMode>
       <ThemeProvider initialTheme={initialTheme}>
-        <Component />
-        <PwaLifecycle />
+        <BrandingProvider>
+          <Component />
+          <PwaLifecycle />
+        </BrandingProvider>
       </ThemeProvider>
     </React.StrictMode>
   );
