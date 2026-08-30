@@ -1,0 +1,11 @@
+# Cloudflare Tunnel ingress template for the production deployment.
+# Replace placeholders locally. Do not commit credentials or private values.
+tunnel: <TUNNEL_UUID>
+credentials-file: /home/amber/.cloudflared/<TUNNEL_UUID>.json
+
+ingress:
+  - hostname: do.luciia.net
+    service: http://<INTERNAL_IP>:<PORT>
+  - hostname: '*.do.luciia.net'
+    service: http://<INTERNAL_IP>:<PORT>
+  - service: http_status:404
