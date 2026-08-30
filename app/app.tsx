@@ -12,6 +12,7 @@ import {
   TemporaryPasswordSetupPage
 } from "@/features/auth/password-setup-page";
 import type { CurrentUser } from "@/features/auth/types";
+import { useBranding } from "@/features/branding/branding-provider";
 import { ComposerHost } from "@/features/compose/composer-host";
 import { useDrafts } from "@/features/drafts/use-drafts";
 import { useMailEvents } from "@/features/events/use-mail-events";
@@ -51,6 +52,10 @@ export function App(): React.ReactElement {
   const [search, setSearch] = React.useState("");
   const [searchQuery, setSearchQuery] = React.useState("");
   const [isLoading, setIsLoading] = React.useState(true);
+  const { setOrganizationId } = useBranding();
+  React.useEffect(() => {
+    setOrganizationId(user?.organizationId ?? null);
+  }, [setOrganizationId, user?.organizationId]);
   const { navigate, route } = useAppRoute(setup?.isComplete);
   const activeFolder: FolderId =
     route.kind === "settings"
