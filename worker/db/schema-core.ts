@@ -44,6 +44,7 @@ export const auditEvents = sqliteTable(
   "audit_events",
   {
     id: text("id").primaryKey().notNull(),
+    organizationId: text("organization_id"),
     occurredAt: text("occurred_at").notNull(),
     correlationId: text("correlation_id").notNull(),
     actorType: text("actor_type", {
@@ -77,6 +78,7 @@ export const auditEvents = sqliteTable(
 export const rateLimits = sqliteTable(
   "rate_limits",
   {
+    organizationId: text("organization_id"),
     scope: text("scope").notNull(),
     subjectHash: text("subject_hash").notNull(),
     windowStart: integer("window_start").notNull(),
@@ -151,6 +153,7 @@ export const installationIdentity = sqliteTable(
   "installation_identity",
   {
     singleton: integer("singleton").primaryKey(),
+    organizationId: text("organization_id"),
     installationId: text("installation_id").notNull().unique(),
     workerName: text("worker_name").notNull(),
     createdAt: text("created_at").notNull(),
