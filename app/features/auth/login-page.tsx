@@ -2,6 +2,7 @@ import * as React from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useBranding } from "@/features/branding/branding-provider";
 import { signIn } from "./api";
 import { authenticationPath, safeAuthenticationReturnPath } from "./password-recovery";
 
@@ -10,6 +11,7 @@ type LoginPageProps = {
 };
 
 export function LoginPage({ onLogin }: LoginPageProps): React.ReactElement {
+  const { branding } = useBranding();
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [isPending, setIsPending] = React.useState(false);
@@ -46,7 +48,11 @@ export function LoginPage({ onLogin }: LoginPageProps): React.ReactElement {
     <main className="flex min-h-screen items-center justify-center bg-rail px-4 py-12">
       <div className="w-full max-w-md">
         <div className="mb-10 flex items-center justify-center gap-2">
-          <img alt="" className="h-7 w-auto rounded-md object-contain" src="/logo.svg" />
+          <img
+            alt=""
+            className="h-7 w-auto rounded-md object-contain"
+            src={branding?.logoUrl ?? "/logo.svg"}
+          />
         </div>
         <section className="overflow-hidden rounded-[24px] border bg-sidebar shadow-sm">
           <header className="px-6 pb-2 pt-5">
