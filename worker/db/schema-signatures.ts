@@ -23,6 +23,7 @@ export const emailSignatures = sqliteTable(
     name: nocaseText("name").notNull(),
     htmlBody: text("html_body").notNull(),
     textBody: text("text_body").notNull(),
+    organizationId: text("organization_id"),
     userId: text("user_id").references(() => users.id, { onDelete: "cascade" }),
     mailboxId: text("mailbox_id").references(() => mailSchema.mailboxes.id, {
       onDelete: "cascade"
