@@ -4,6 +4,7 @@ import { PiSidebar, PiSidebarSimple } from "react-icons/pi";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import type { CurrentUser } from "@/features/auth/types";
+import { useBranding } from "@/features/branding/branding-provider";
 import type { MailConnectionStatus } from "@/features/events/types";
 import type { Mailbox } from "@/features/mailboxes/types";
 import type { UnreadCounts } from "@/features/notifications/types";
@@ -65,6 +66,7 @@ export function Sidebar({
   onSettingsTabChange,
   onToggleSidebar
 }: SidebarProps): React.ReactElement {
+  const { branding } = useBranding();
   const isDrawer = variant === "drawer";
   const handleSectionChange = onSectionChange ?? onFolderChange;
 
@@ -95,7 +97,11 @@ export function Sidebar({
               handleSectionChange("inbox");
             }}
           >
-            <img alt="" className="size-7 rounded-md object-contain" src="/logo.svg" />
+            <img
+              alt=""
+              className="size-7 rounded-md object-contain"
+              src={branding?.logoUrl ?? "/logo.svg"}
+            />
           </a>
           <div className={cn("mt-5 flex flex-col gap-1", isDrawer && "w-full items-center")}>
             {quickAccess.map(({ folder, icon: Icon, label }) => {
