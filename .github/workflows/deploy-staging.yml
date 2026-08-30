@@ -1,0 +1,63 @@
+name: Deploy staging
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: Git ref to deploy
+        required: true
+        default: main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hqbase-staging
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: hqbase-staging
+    env:
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.HQBASE_STAGING_CLOUDFLARE_ACCOUNT_ID }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.HQBASE_STAGING_CLOUDFLARE_API_TOKEN }}
+      D1_DATABASE_ID: ${{ secrets.HQBASE_STAGING_D1_DATABASE_ID }}
+      R2_BUCKET_NAME: ${{ vars.HQBASE_STAGING_R2_BUCKET_NAME }}
+      APP_HOSTNAME: ${{ vars.HQBASE_STAGING_APP_HOSTNAME }}
+      BETTER_AUTH_SECRET: ${{ secrets.HQBASE_STAGING_BETTER_AUTH_SECRET }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.ref || github.event.pull_request.head.sha || github.sha }}
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 11.7.0
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - name: Render staging Wrangler config
+        run: |
+          cp wrangler.staging.toml wrangler.staging.generated.toml
+          sed -i "s/__ACCOUNT_ID__/$CLOUDFLARE_ACCOUNT_ID/g; s/00000000-0000-0000-0000-000000000000/$D1_DATABASE_ID/g; s/hqbase-staging-r2/$R2_BUCKET_NAME/g" wrangler.staging.generated.toml
+      - name: Apply D1 migrations
+        run: pnpm exec wrangler d1 migrations apply DB --remote --config wrangler.staging.generated.toml
+      - name: Deploy Worker
+        run: pnpm exec wrangler deploy --config wrangler.staging.generated.toml
+      - name: Provision Worker secrets
+        run: printf '%s' "$BETTER_AUTH_SECRET" | pnpm exec wrangler secret put BETTER_AUTH_SECRET --config wrangler.staging.generated.toml
+      - name: Apply post-deploy D1 migrations
+        run: |
+          sed 's#directory = "migrations"#directory = "migrations-after-deploy"#; s#migrations_table = "d1_migrations"#migrations_table = "d1_migrations_after_deploy"#' wrangler.staging.generated.toml > wrangler.staging.after-deploy.toml
+          pnpm exec wrangler d1 migrations apply DB --remote --config wrangler.staging.after-deploy.toml
+      - name: Smoke test
+        run: |
+          test -n "$APP_HOSTNAME"
+          curl --fail --silent --show-error --retry 10 --retry-delay 5 "https://$APP_HOSTNAME/api/health" | jq -e '.ok == true and .service == "hqbase"'
+          curl --fail --silent --show-error "https://$APP_HOSTNAME/.well-known/oauth-authorization-server/api/auth" | jq -e 'type == "object"'
